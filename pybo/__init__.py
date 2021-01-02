@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
@@ -16,6 +16,15 @@ naming_convention = {
 }
 db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
 migrate = Migrate()
+
+# 매개변수 e : 오류
+# 404 에러 페이지
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+# 500 에러 페이지
+def server_error(e):
+    return render_template('500.html'), 500
 
 # create_app은 플라스크 내부에서 정의된 함수명이다. (다른 이름으로 작성할 경우 실행되지 않음)
 def create_app():
@@ -48,5 +57,9 @@ def create_app():
 
     # markdown
     Markdown(app, extensions=['nl2br', 'fenced_code'])
+
+    # 오류페이지
+    app.register_error_handler(404, page_not_found)
+    app.register_error_handler(500, server_error)
 
     return app
